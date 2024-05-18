@@ -2,7 +2,7 @@ from web3 import Web3
 from web3.middleware import geth_poa_middleware
 from contract_info import abi, contract_address
 import re
-import sys
+
 
 w3 = Web3(Web3.HTTPProvider('http://127.0.0.1:8545'))
 w3.middleware_onion.inject(geth_poa_middleware, layer=0)
@@ -38,44 +38,43 @@ def register():
 
 
 def createEstate(account):
-    try:
-        while True:
+    while True:
+        try:
             try:
                 size = int(input("Введите площадь: "))
             except ValueError:
                 print("Введите число")
-                break
+                continue#до сюда все гуд
             if size > 1:
-                address = input("Введите адрес: ")
-                estate_type = int(input("Выберите тип недвижимости (1 - дом, 2 - квартира, 3 - дом): "))
+                address = str(input("Введите адрес: "))
+                estate_type = int(input("Выберите тип недвижимости (1 - дом, 2 - квартира, 3 - лофт): "))
                 if estate_type in [1, 2, 3]:
                     tx_hash = contract.functions.createEstate(size, address, estate_type - 1).transact({
                         'from': account
                     })
                     print(f"Недвижимость {tx_hash.hex()} успешно создана")
+                    break
                 else:
                     print("Неверный тип недвижимости")
             else:
-                print("Площадь должна быть больше 0")
-    except Exception as e:
-        print(f"Ошибка добавления недвижимости: {e}")
+                print("Площадь должна быть больше 1")
+        except Exception as e:
+            print(f"Ошибка добавления недвижимости: {e}")
 
 def createAd(account):
-    try:
+    while True:
         try:
             id = int(input("Введите id недвижимости: "))
-        except ValueError:
-            print("Необходимо ввести число")
-        try:
             price = int(input("Введите цену недвижимости: "))
+            tx_hash = contract.functions.createAd(id, price).transact({
+                'from': account
+            })
+            print(f"Объявление {tx_hash.hex()} успешно создано")
+            break
         except ValueError:
             print("Необходимо ввести число")
-        tx_hash = contract.functions.createAd(id, price).transact({
-            'from': account
-        })
-        print(f"Объявление {tx_hash.hex()} успешно создано")
-    except Exception as e:
-        print(f"Ошибка добавление объявления: {e}")
+        except Exception as e:
+            print(f"Ошибка добавления объявления: {e}")
 
 
 
@@ -91,6 +90,7 @@ def updateEstateaddress(account):
                 status_vybor = int(input("Выберите статус объявления\n1. Открыт\n2. Закрыт\n"))
             except ValueError:
                 continue
+            status = bool
             match status_vybor:
                 case 1:
                     status = True
@@ -99,7 +99,7 @@ def updateEstateaddress(account):
             tx_hash = contract.functions.updateEstateStatus(id, status).transact({
                 'from': account,
             })
-            print(f"статус был обновлен {tx_hash}")
+            print(f"статус был обновлен {tx_hash.hex()}")
             break
         except Exception as e:
             print(f"Ошибка обновления объявления: {e}")
@@ -118,6 +118,7 @@ def UpdateAdStatus(account):
                 })
                 print(f"Статус объявления изменен {tx_hash.hex()}")
                 break
+            break
         except Exception as e:
             print(f"Ошибка обновления статуса объявления: {e}")
             break
@@ -218,6 +219,7 @@ def main():
                                     "7. Посмотреть объявления\n8. Посмотреть баланс смарт-контракта\n"
                                     "9. Посмотреть баланс аккаунта\n10. Вывести средства\n11. Выйти\n"))
                     except ValueError:
+                        print("Введите число")
                         continue
                     match choice:
                         case 1:

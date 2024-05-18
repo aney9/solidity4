@@ -547,4 +547,4 @@ abi = """
 
 """
 
-contract_address ="0xCEbe51AeEf902a09d2f451AE8ba87b151eeD7CA2"
+contract_address ="0x6c684BC0fd5C7E4F1c6DC28361A103329017cfb7"
